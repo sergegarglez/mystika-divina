@@ -1238,10 +1238,10 @@ const FREE_Q_LIMIT = 3;
 
 // ── Stripe config ─────────────────────────────────────────────────────────────
 // Stripe config — use .env for production (VITE_ prefix exposes safely to browser)
-const STRIPE_PRODUCT_ID   = import.meta.env.VITE_STRIPE_PRODUCT_ID   || "prod_Uk3ZaCMp9C0sxZ";
-const STRIPE_PUBLISHABLE  = import.meta.env.VITE_STRIPE_PUBLISHABLE  || "pk_test_51TkZLk374aLVRteypGaiWmyk87n96bAytk1glAhOJ3G8P8WhkR4F3e3RrHfbnAs7xQOBCv8NufUtJCK01knjNrGR00RPFKmM1R";
-const STRIPE_PRICE_ID     = import.meta.env.VITE_STRIPE_PRICE_ID     || "price_1TkZRy374aLVRteytf9GFE6S";
-const STRIPE_PAYMENT_LINK_URL = import.meta.env.VITE_STRIPE_PAYMENT_LINK || "https://buy.stripe.com/test_9B614g6DK6dX0qh6Th8EM00";
+const STRIPE_PRODUCT_ID   = import.meta.env.VITE_STRIPE_PRODUCT_ID   || "prod_UkKtnofMQyNxht";
+const STRIPE_PUBLISHABLE  = import.meta.env.VITE_STRIPE_PUBLISHABLE  || "pk_live_51TBQtv3e7ZPAkTxFWWtMFmqsKWXZA48QTUqREPwB0i5oNKutSDtlV7rVn3sZm6KIvdeZQgHDbvFLjTsmoMbRCAz500BvNkD5VV";
+const STRIPE_PRICE_ID     = import.meta.env.VITE_STRIPE_PRICE_ID     || "price_1TkqDU3e7ZPAkTxFR1H4NkNO";
+const STRIPE_PAYMENT_LINK_URL = import.meta.env.VITE_STRIPE_PAYMENT_LINK || "https://buy.stripe.com/cNi28k7Je2Eeb0I35b0co00";
 
 async function loadStripeJs() {
   if (window.Stripe) return window.Stripe;
