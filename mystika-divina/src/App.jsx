@@ -1876,11 +1876,37 @@ export default function CartaNatalApp() {
 
   const generate = () => {
     setError("");
-    const [y, m, d] = form.date.split("-").map(Number);
-    const [hh, mm] = form.time.split(":").map(Number);
+    // Validaciones explícitas campo por campo
+    if (!form.name || !form.name.trim()) { setError("Escribe tu nombre."); return; }
+    if (!form.date) { setError("Selecciona tu fecha de nacimiento."); return; }
+    if (!form.time) { setError("Selecciona tu hora de nacimiento."); return; }
+
+    const dateParts = form.date.split("-").map(Number);
+    const timeParts = form.time.split(":").map(Number);
+    if (dateParts.length < 3 || dateParts.some(isNaN)) { setError("Fecha inválida. Usa el selector de fecha."); return; }
+    if (timeParts.length < 2 || timeParts.some(isNaN)) { setError("Hora inválida. Usa el selector de hora."); return; }
+
+    const [y, m, d] = dateParts;
+    const [hh, mm] = timeParts;
     const lat = parseFloat(form.lat), lon = parseFloat(form.lon), tz = parseFloat(form.tz);
-    if (!y || isNaN(lat) || isNaN(lon) || isNaN(tz) || isNaN(hh)) { setError("Revisa la fecha, hora y coordenadas."); return; }
-    setChartData(computeChart({ y, m, d, hh, mm, tz, lat, lon }));
+
+    if (isNaN(lat) || lat < -90 || lat > 90) { setError("Latitud inválida (debe estar entre -90 y 90)."); return; }
+    if (isNaN(lon) || lon < -180 || lon > 180) { setError("Longitud inválida (debe estar entre -180 y 180)."); return; }
+    if (isNaN(tz) || tz < -12 || tz > 14) { setError("Zona horaria (UTC) inválida."); return; }
+    if (y < 1800 || y > 2100) { setError("El año debe estar entre 1800 y 2100."); return; }
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) { setError("Hora fuera de rango."); return; }
+
+    try {
+      const chart = computeChart({ y, m, d, hh, mm, tz, lat, lon });
+      // Verificación final: si algún cálculo produjo NaN, no mostrar la carta
+      if (!chart || isNaN(chart.asc) || isNaN(chart.mc) || chart.planets.some(p => isNaN(p.lon))) {
+        setError("No se pudo calcular la carta con estos datos. Verifica la fecha, hora y lugar.");
+        return;
+      }
+      setChartData(chart);
+    } catch (e) {
+      setError("Error al calcular la carta. Revisa los datos ingresados.");
+    }
   };
 
   const downloadPNG = () => {
