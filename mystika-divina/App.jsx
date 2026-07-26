@@ -150,7 +150,7 @@ function computeChart({ y, m, d, hh, mm, tz, lat, lon }) {
 /* ============ FORMATO ============ */
 const SIGNS = ["Aries","Tauro","Géminis","Cáncer","Leo","Virgo","Libra","Escorpio","Sagitario","Capricornio","Acuario","Piscis"];
 const SIGN_GLYPHS = ["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"];
-const ELEMENT_COLOR = ["#B5543B","#5B7C4F","#C9A24B","#3E6B8C","#B5543B","#5B7C4F","#C9A24B","#3E6B8C","#B5543B","#5B7C4F","#C9A24B","#3E6B8C"];
+const ELEMENT_COLOR = ["#C0566B","#394D38","#C9A2D5","#25468D","#C0566B","#394D38","#C9A2D5","#25468D","#C0566B","#394D38","#C9A2D5","#25468D"];
 const PLANET_GLYPHS = { Sol:"☉", Luna:"☽", Mercurio:"☿", Venus:"♀", Marte:"♂", "Júpiter":"♃", Saturno:"♄", Urano:"♅", Neptuno:"♆", "Plutón":"♇", "Nodo N.":"☊" };
 function fmtPos(lonV) {
   const s = Math.floor(lonV / 30), within = lonV % 30;
@@ -206,22 +206,22 @@ function Wheel({ chart, name, svgRef }) {
   }
   const dispByIdx = {}; disp.forEach((o) => (dispByIdx[o.i] = o.d));
 
-  const aspectColor = (k) => (k === "hard" ? "#B33A3A" : k === "soft" ? "#34618C" : "#8a8265");
+  const aspectColor = (k) => (k === "hard" ? "#C0566B" : k === "soft" ? "#7B86D5" : "#C9A2D5");
 
   return (
     <svg ref={svgRef} viewBox={`0 0 ${S} ${S}`} style={{ width: "100%", height: "auto", display: "block" }}>
       <defs>
         <radialGradient id="paper" cx="50%" cy="42%" r="75%">
-          <stop offset="0%" stopColor="#FBF7EC" />
-          <stop offset="100%" stopColor="#EFE6D2" />
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#F1EDFA" />
         </radialGradient>
       </defs>
-      <circle cx={cx} cy={cy} r={rZodOut + 14} fill="url(#paper)" stroke="#C9A24B" strokeWidth="2" />
-      <circle cx={cx} cy={cy} r={rZodOut + 8} fill="none" stroke="#C9A24B" strokeWidth="0.6" opacity="0.6" />
-      <circle cx={cx} cy={cy} r={rZodOut} fill="none" stroke="#3a3424" strokeWidth="1.2" />
-      <circle cx={cx} cy={cy} r={rZodIn} fill="none" stroke="#3a3424" strokeWidth="1.2" />
-      <circle cx={cx} cy={cy} r={rTick} fill="none" stroke="#9a9078" strokeWidth="0.6" />
-      <circle cx={cx} cy={cy} r={rAspect} fill="#FBF7EC" stroke="#3a3424" strokeWidth="1" />
+      <circle cx={cx} cy={cy} r={rZodOut + 14} fill="url(#paper)" stroke="#7B86D5" strokeWidth="2" />
+      <circle cx={cx} cy={cy} r={rZodOut + 8} fill="none" stroke="#7B86D5" strokeWidth="0.6" opacity="0.6" />
+      <circle cx={cx} cy={cy} r={rZodOut} fill="none" stroke="#25468D" strokeWidth="1.2" />
+      <circle cx={cx} cy={cy} r={rZodIn} fill="none" stroke="#25468D" strokeWidth="1.2" />
+      <circle cx={cx} cy={cy} r={rTick} fill="none" stroke="rgba(123,134,213,0.55)" strokeWidth="0.6" />
+      <circle cx={cx} cy={cy} r={rAspect} fill="#FFFFFF" stroke="#25468D" strokeWidth="1" />
 
       {/* Signos */}
       {SIGN_GLYPHS.map((g, i) => {
@@ -230,7 +230,7 @@ function Wheel({ chart, name, svgRef }) {
         const [gx, gy] = pt(start + 15, (rZodOut + rZodIn) / 2);
         return (
           <g key={i}>
-            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#3a3424" strokeWidth="0.8" />
+            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#25468D" strokeWidth="0.8" />
             <text x={gx} y={gy} fontSize="26" fill={ELEMENT_COLOR[i]} textAnchor="middle" dominantBaseline="central" fontFamily="'Noto Sans Symbols', serif">{g}</text>
           </g>
         );
@@ -239,7 +239,7 @@ function Wheel({ chart, name, svgRef }) {
       {Array.from({ length: 72 }, (_, i) => {
         const lonV = i * 5, big = i % 2 === 0;
         const [x1, y1] = pt(lonV, rZodIn), [x2, y2] = pt(lonV, rZodIn - (big ? 8 : 5));
-        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#6b6250" strokeWidth={big ? 1 : 0.5} />;
+        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(37,70,141,0.45)" strokeWidth={big ? 1 : 0.5} />;
       })}
 
       {/* Cúspides de casas */}
@@ -252,14 +252,14 @@ function Wheel({ chart, name, svgRef }) {
         return (
           <g key={h}>
             <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={isAxis ? "#2c2618" : "#9a9078"} strokeWidth={isAxis ? 2 : 0.8} />
-            <text x={nx} y={ny} fontSize="13" fill="#9a9078" textAnchor="middle" dominantBaseline="central" fontStyle="italic" fontFamily="Georgia, serif">{h}</text>
+            <text x={nx} y={ny} fontSize="13" fill="rgba(37,70,141,0.6)" textAnchor="middle" dominantBaseline="central" fontStyle="italic" fontFamily="Georgia, serif">{h}</text>
           </g>
         );
       })}
       {/* Etiquetas AC / MC */}
       {(() => {
         const [ax, ay] = pt(asc, rZodOut + 28); const [mx, my] = pt(cusps[10], rZodOut + 28);
-        return (<g fontFamily="Georgia, serif" fontSize="15" fontWeight="bold" fill="#2c2618">
+        return (<g fontFamily="Georgia, serif" fontSize="15" fontWeight="bold" fill="#142D4D">
           <text x={ax} y={ay} textAnchor="middle" dominantBaseline="central">AC</text>
           <text x={mx} y={my} textAnchor="middle" dominantBaseline="central">MC</text>
         </g>);
@@ -282,10 +282,10 @@ function Wheel({ chart, name, svgRef }) {
         const f = fmtPos(p.lon);
         return (
           <g key={p.name}>
-            <line x1={tx1} y1={ty1} x2={tx2} y2={ty2} stroke="#2c2618" strokeWidth="1.6" />
-            <line x1={gx} y1={gy} x2={cx2} y2={cy2} stroke="#c9bfa4" strokeWidth="0.5" opacity="0.7" />
-            <text x={gx} y={gy} fontSize="24" fill="#2c2618" textAnchor="middle" dominantBaseline="central" fontFamily="'Noto Sans Symbols', serif">{PLANET_GLYPHS[p.name]}</text>
-            <text x={lx} y={ly} fontSize="11" fill="#6b6250" textAnchor="middle" dominantBaseline="central" fontFamily="Georgia, serif">
+            <line x1={tx1} y1={ty1} x2={tx2} y2={ty2} stroke="#142D4D" strokeWidth="1.6" />
+            <line x1={gx} y1={gy} x2={cx2} y2={cy2} stroke="rgba(201,162,213,0.6)" strokeWidth="0.5" opacity="0.7" />
+            <text x={gx} y={gy} fontSize="24" fill="#142D4D" textAnchor="middle" dominantBaseline="central" fontFamily="'Noto Sans Symbols', serif">{PLANET_GLYPHS[p.name]}</text>
+            <text x={lx} y={ly} fontSize="11" fill="#25468D" textAnchor="middle" dominantBaseline="central" fontFamily="Georgia, serif">
               {f.text.split("'")[0] + "'"}{p.retro ? " ℞" : ""}
             </text>
           </g>
@@ -293,8 +293,8 @@ function Wheel({ chart, name, svgRef }) {
       })}
 
       {/* Centro */}
-      <text x={cx} y={cy - 8} fontSize="17" fill="#2c2618" textAnchor="middle" fontFamily="Georgia, serif" fontStyle="italic">{name || "Carta natal"}</text>
-      <circle cx={cx} cy={cy + 12} r="2" fill="#C9A24B" />
+      <text x={cx} y={cy - 8} fontSize="17" fill="#142D4D" textAnchor="middle" fontFamily="Georgia, serif" fontStyle="italic">{name || "Carta natal"}</text>
+      <circle cx={cx} cy={cy + 12} r="2" fill="#7B86D5" />
     </svg>
   );
 }
@@ -650,6 +650,36 @@ function respond2(question, reading, chart) {
   return `Con Sol en ${sunSign}, Luna en ${moonSign} y Ascendente en ${ascSign}, tu carta habla de alguien que actúa con la energía de ${sunSign}, siente desde ${moonSign} y se proyecta como ${ascSign}.\n\nPuedes preguntarme sobre:\n• Amor y relaciones\n• Trabajo y vocación\n• Luna y emociones\n• Principales retos\n• Júpiter y expansión\n• Mercurio y mente\n• Marte y energía\n• Saturno y disciplina\n• Aspectos de la carta\n• Cualquier planeta específico`;
 }
 
+// Construye un resumen de texto de la carta para enviar a la IA
+function chartToText(chart, name) {
+  const SS = ["Aries","Tauro","Géminis","Cáncer","Leo","Virgo","Libra","Escorpio","Sagitario","Capricornio","Acuario","Piscis"];
+  const fmt = (lon) => { const s = Math.floor(lon/30), d = Math.floor(lon%30), m = Math.floor(((lon%30)-d)*60); return `${d}°${String(m).padStart(2,"0")}' ${SS[s]}`; };
+  const lines = chart.planets.map(p => `${p.name}: ${fmt(p.lon)}, Casa ${houseOf(p.lon, chart.cusps)}${p.retro ? " (R)" : ""}`);
+  const asp = chart.aspects.slice(0, 10).map(a => `${chart.planets[a.a].name} ${a.type.name} ${chart.planets[a.b].name} (${a.orb.toFixed(1)}°)`);
+  return `Carta natal de ${name || "consultante"} (tropical, Placidus):\n` +
+    lines.join("\n") +
+    `\nAscendente: ${fmt(chart.asc)}\nMedio Cielo: ${fmt(chart.mc)}\nAspectos: ${asp.join("; ")}`;
+}
+
+// Llama al endpoint de IA; devuelve null si falla (para usar fallback local)
+async function fetchAI({ mode, chart, name, question, history, extra }) {
+  try {
+    const res = await fetch("/api/interpret", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode,
+        chartSummary: chartToText(chart, name) + (extra ? "\n" + extra : ""),
+        question,
+        history: (history || []).map(m => ({ role: m.role, content: m.content })),
+      }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.text || null;
+  } catch { return null; }
+}
+
 function Interpreter({ chart, name, freeLimit = null, onLimitReached = null }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -657,16 +687,20 @@ function Interpreter({ chart, name, freeLimit = null, onLimitReached = null }) {
   const reading = useMemo(() => buildReading2(chart, name), [chart, name]);
   const isBlocked = freeLimit !== null && qCount >= freeLimit;
 
-  const send = (userText) => {
-    if (!userText.trim()) return;
+  const [thinking, setThinking] = useState(false);
+
+  const send = async (userText) => {
+    if (!userText.trim() || thinking) return;
     if (isBlocked) { if (onLimitReached) onLimitReached(); return; }
-    const answer = respond2(userText, reading, chart);
-    setMessages(prev => [
-      ...prev,
-      { role: "user", content: userText },
-      { role: "assistant", content: answer },
-    ]);
+    const history = messages.slice();
+    setMessages(prev => [...prev, { role: "user", content: userText }]);
     if (freeLimit !== null) setQCount(c => c + 1);
+    setThinking(true);
+    // 1) Intentar IA real; 2) si falla, usar intérprete local
+    let answer = await fetchAI({ mode: "interprete", chart, name, question: userText, history });
+    if (!answer) answer = respond2(userText, reading, chart);
+    setMessages(prev => [...prev, { role: "assistant", content: answer }]);
+    setThinking(false);
   };
 
   const ask = () => {
@@ -687,33 +721,34 @@ function Interpreter({ chart, name, freeLimit = null, onLimitReached = null }) {
 
   return (
     <div style={{ marginBottom: 26 }}>
-      <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, fontWeight: 600, color: "#F5EFE2", margin: "0 0 4px" }}>
+      <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, fontWeight: 600, color: "#142D4D", margin: "0 0 4px" }}>
         ✦ Intérprete astral
       </h2>
-      <p style={{ color: "#8B7FB8", fontSize: 13, margin: "0 0 12px", fontStyle: "italic" }}>
+      <p style={{ color: "#6E7BA8", fontSize: 13, margin: "0 0 12px", fontStyle: "italic" }}>
         Interpretaciones específicas para tu carta calculada
       </p>
-      <div style={{ background: "#1a1733", border: "1px solid #2e2952", borderRadius: 16, padding: 16 }}>
+      <div style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border: "1px solid rgba(123,134,213,0.16)", borderRadius: 22, padding: 16 }}>
         {messages.length === 0 && (
-          <p style={{ color: "#8B7FB8", fontSize: 14, margin: "0 0 12px", fontStyle: "italic", textAlign: "center" }}>
+          <p style={{ color: "#6E7BA8", fontSize: 14, margin: "0 0 12px", fontStyle: "italic", textAlign: "center" }}>
             Elige un tema o escribe tu pregunta.
           </p>
         )}
         <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 14 }}>
           {QUICK.map((q) => (
             <button key={q} onClick={() => send(q)} style={{
-              padding: "8px 13px", borderRadius: 999, border: "1px solid #3b3563",
-              background: "transparent", color: "#C9A24B", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+              padding: "8px 13px", borderRadius: 999, border: "1px solid rgba(123,134,213,0.28)",
+              background: "transparent", color: "#7B86D5", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
             }}>{q}</button>
           ))}
         </div>
         {messages.map((m, i) => (
           <div key={i} style={{
-            margin: "10px 0", padding: "12px 14px", borderRadius: 12, fontSize: 14.5, lineHeight: 1.65,
+            margin: "10px 0", padding: "12px 14px", borderRadius: 14, fontSize: 14.5, lineHeight: 1.65,
             whiteSpace: "pre-wrap",
-            background: m.role === "user" ? "#2a2450" : "#221d40",
-            border: m.role === "user" ? "1px solid #3b3563" : "1px solid #2e2952",
-            color: m.role === "user" ? "#cfc6e8" : "#EDE7F6",
+            background: m.role === "user" ? "rgba(201,162,213,0.28)" : "rgba(255,255,255,0.92)",
+            backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+            border: m.role === "user" ? "1px solid rgba(123,134,213,0.28)" : "1px solid rgba(123,134,213,0.16)",
+            color: m.role === "user" ? "#25468D" : "#142D4D",
             marginLeft: m.role === "user" ? 40 : 0,
             marginRight: m.role === "user" ? 0 : 40,
           }}>
@@ -721,11 +756,16 @@ function Interpreter({ chart, name, freeLimit = null, onLimitReached = null }) {
           </div>
         ))}
         {freeLimit !== null && !isBlocked && (
-          <div style={{ textAlign:"center", margin:"8px 0 4px", fontSize:12, color: qCount >= freeLimit - 1 ? "#e08585" : "#6f659b" }}>
+          <div style={{ textAlign:"center", margin:"8px 0 4px", fontSize:12, color: qCount >= freeLimit - 1 ? "#C0566B" : "#8A94BC" }}>
             {freeLimit - qCount} pregunta{freeLimit - qCount !== 1 ? "s" : ""} gratuita{freeLimit - qCount !== 1 ? "s" : ""} restante{freeLimit - qCount !== 1 ? "s" : ""}
           </div>
         )}
         {isBlocked ? null : (
+        {thinking && (
+          <div style={{ color:"#7B86D5", fontSize:13, fontStyle:"italic", padding:"6px 4px 12px" }}>
+            ✦ Consultando los astros...
+          </div>
+        )}
         <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
           <input
             value={input}
@@ -733,14 +773,14 @@ function Interpreter({ chart, name, freeLimit = null, onLimitReached = null }) {
             onKeyDown={(e) => e.key === "Enter" && ask()}
             placeholder="Pregunta sobre tu carta..."
             style={{
-              flex: 1, background: "#1d1a38", border: "1px solid #3b3563", borderRadius: 10,
-              color: "#EDE7F6", padding: "11px 13px", fontSize: 15, outline: "none", fontFamily: "inherit",
+              flex: 1, background: "rgba(255,255,255,0.9)", border: "1px solid rgba(123,134,213,0.28)", borderRadius: 12,
+              color: "#142D4D", padding: "11px 13px", fontSize: 15, outline: "none", fontFamily: "inherit",
             }}
           />
           <button onClick={ask} style={{
-            padding: "0 18px", borderRadius: 10, border: "1px solid #C9A24B",
-            background: "linear-gradient(180deg, #d8b25e, #b8923f)",
-            color: "#1a1408", fontSize: 18, cursor: "pointer", fontFamily: "inherit",
+            padding: "0 18px", borderRadius: 12, border: "1px solid #7B86D5",
+            background: "linear-gradient(135deg, #8E97DE, #7B86D5 55%, #6470C4)", boxShadow: "0 8px 24px rgba(123,134,213,0.38), inset 0 1px 0 rgba(255,255,255,0.28)",
+            color: "#FFFFFF", fontSize: 18, cursor: "pointer", fontFamily: "inherit",
           }}>›</button>
         </div>
         )}
@@ -1111,11 +1151,24 @@ function LuaAgent({ chart, name, isPremium = false, onUpgrade = null }) {
     setMessages([{ role: "assistant", content: fullText }]);
   };
 
-  const ask = (userText) => {
-    if (!userText.trim()) return;
-    const answer = respondLua(userText, name, chart, transits, reading);
-    setMessages(prev => [...prev, { role:"user", content: userText }, { role:"assistant", content: answer }]);
+  const [thinking, setThinking] = useState(false);
+
+  const transitText = () => {
+    const active = transits.filter(t => t.aspects && t.aspects.length)
+      .map(t => `${t.planet} en ${t.sign} (Casa ${t.house}${t.retro ? ", R" : ""})`).join("; ");
+    return "TRÁNSITOS DE HOY: " + active;
+  };
+
+  const ask = async (userText) => {
+    if (!userText.trim() || thinking) return;
+    const history = messages.slice();
+    setMessages(prev => [...prev, { role:"user", content: userText }]);
     setInput("");
+    setThinking(true);
+    let answer = await fetchAI({ mode: "lua", chart, name, question: userText, history, extra: transitText() });
+    if (!answer) answer = respondLua(userText, name, chart, transits, reading);
+    setMessages(prev => [...prev, { role:"assistant", content: answer }]);
+    setThinking(false);
   };
 
   const QUICK_LUA = [
@@ -1132,40 +1185,40 @@ function LuaAgent({ chart, name, isPremium = false, onUpgrade = null }) {
   return (
     <div style={{ marginBottom: 26 }}>
       <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:4 }}>
-        <h2 style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:26, fontWeight:600, color:"#F5EFE2", margin:0 }}>
+        <h2 style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:26, fontWeight:600, color:"#142D4D", margin:0 }}>
           🌙 Guía Cósmica Diaria
         </h2>
-        <span style={{ background:"#2a2450", border:"1px solid #3b3563", borderRadius:20, padding:"3px 10px", fontSize:11, color:"#8B7FB8", letterSpacing:"0.12em" }}>
+        <span style={{ background: "rgba(201,162,213,0.28)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)", border:"1px solid rgba(123,134,213,0.28)", borderRadius:26, padding:"3px 10px", fontSize:11, color:"#6E7BA8", letterSpacing:"0.12em" }}>
           LÚA
         </span>
       </div>
-      <p style={{ color:"#8B7FB8", fontSize:13, margin:"0 0 12px", fontStyle:"italic" }}>
+      <p style={{ color:"#6E7BA8", fontSize:13, margin:"0 0 12px", fontStyle:"italic" }}>
         Luna hoy en {moonSign}, Casa {moonH} · Orientación diaria personalizada para tu carta
       </p>
 
-      <div style={{ background:"#1a1733", border:"1px solid #2e2952", borderRadius:16, padding:16 }}>
+      <div style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border:"1px solid rgba(123,134,213,0.16)", borderRadius:22, padding:16 }}>
         {!isPremium ? (
           <div style={{ textAlign:"center", padding:"12px 0" }}>
             <div style={{ fontSize:32, marginBottom:10 }}>🌙</div>
-            <div style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:20, color:"#F5EFE2", marginBottom:8 }}>Guía Cósmica Diaria</div>
-            <div style={{ color:"#8B7FB8", fontSize:13, marginBottom:16, lineHeight:1.6 }}>
+            <div style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:20, color:"#142D4D", marginBottom:8 }}>Guía Cósmica Diaria</div>
+            <div style={{ color:"#6E7BA8", fontSize:13, marginBottom:16, lineHeight:1.6 }}>
               Lúa calcula los tránsitos de hoy sobre tu carta y genera una guía personalizada del día.<br/>
-              Esta función es <strong style={{color:"#C9A24B"}}>exclusiva Premium</strong>.
+              Esta función es <strong style={{color:"#7B86D5"}}>exclusiva Premium</strong>.
             </div>
-            <button onClick={onUpgrade} style={{ padding:"11px 22px", borderRadius:12, border:"1px solid #C9A24B",
-              background:"linear-gradient(180deg, #d8b25e, #b8923f)", color:"#1a1408",
+            <button onClick={onUpgrade} style={{ padding:"11px 22px", borderRadius:14, border:"1px solid #7B86D5",
+              background: "linear-gradient(135deg, #8E97DE, #7B86D5 55%, #6470C4)", boxShadow: "0 8px 24px rgba(123,134,213,0.38), inset 0 1px 0 rgba(255,255,255,0.28)", color:"#FFFFFF",
               fontSize:14, fontWeight:500, cursor:"pointer", fontFamily:"inherit" }}>
-              ★ Desbloquear con Premium — $5/mes
+              ★ Desbloquear con Premium — $7/mes
             </button>
           </div>
         ) : !shown ? (
           <div style={{ textAlign:"center", padding:"8px 0" }}>
-            <p style={{ color:"#8B7FB8", fontSize:14, margin:"0 0 14px", fontStyle:"italic" }}>
+            <p style={{ color:"#6E7BA8", fontSize:14, margin:"0 0 14px", fontStyle:"italic" }}>
               Lúa cruza los tránsitos de hoy con tu carta natal y genera tu guía personalizada del día.
             </p>
             <button onClick={generate} style={{
-              padding:"13px 28px", borderRadius:12, border:"1px solid #C9A24B",
-              background:"linear-gradient(180deg, #d8b25e, #b8923f)", color:"#1a1408",
+              padding:"13px 28px", borderRadius:14, border:"1px solid #7B86D5",
+              background: "linear-gradient(135deg, #8E97DE, #7B86D5 55%, #6470C4)", boxShadow: "0 8px 24px rgba(123,134,213,0.38), inset 0 1px 0 rgba(255,255,255,0.28)", color:"#FFFFFF",
               fontSize:15, fontWeight:500, cursor:"pointer", fontFamily:"inherit", letterSpacing:"0.04em",
             }}>
               ✦ Ver mi guía de hoy
@@ -1175,21 +1228,22 @@ function LuaAgent({ chart, name, isPremium = false, onUpgrade = null }) {
 
         {messages.map((m, i) => (
           <div key={i} style={{
-            margin:"10px 0", padding:"13px 15px", borderRadius:12, fontSize:14.5, lineHeight:1.7,
+            margin:"10px 0", padding:"13px 15px", borderRadius:14, fontSize:14.5, lineHeight:1.7,
             whiteSpace:"pre-wrap",
-            background: m.role==="user" ? "#2a2450" : "#1e1a40",
-            border: m.role==="user" ? "1px solid #3b3563" : "1px solid #C9A24B33",
-            color: m.role==="user" ? "#cfc6e8" : "#EDE7F6",
+            background: m.role==="user" ? "rgba(201,162,213,0.28)" : "rgba(255,255,255,0.92)",
+            backdropFilter:"blur(10px)", WebkitBackdropFilter:"blur(10px)",
+            border: m.role==="user" ? "1px solid rgba(123,134,213,0.28)" : "1px solid #7B86D533",
+            color: m.role==="user" ? "#25468D" : "#142D4D",
             marginLeft: m.role==="user" ? 40 : 0,
             marginRight: m.role==="user" ? 0 : 40,
           }}>
             {m.role === "assistant" && i === 0 && (
-              <div style={{ color:"#C9A24B", fontSize:11, letterSpacing:"0.2em", textTransform:"uppercase", marginBottom:8 }}>
+              <div style={{ color:"#7B86D5", fontSize:11, letterSpacing:"0.2em", textTransform:"uppercase", marginBottom:8 }}>
                 Lúa · Tu guía cósmica
               </div>
             )}
             {m.role === "assistant" && i > 0 && (
-              <div style={{ color:"#C9A24B", fontSize:11, letterSpacing:"0.15em", textTransform:"uppercase", marginBottom:6 }}>
+              <div style={{ color:"#7B86D5", fontSize:11, letterSpacing:"0.15em", textTransform:"uppercase", marginBottom:6 }}>
                 Lúa
               </div>
             )}
@@ -1202,26 +1256,31 @@ function LuaAgent({ chart, name, isPremium = false, onUpgrade = null }) {
             <div style={{ display:"flex", gap:7, flexWrap:"wrap", margin:"12px 0 10px" }}>
               {QUICK_LUA.map(q => (
                 <button key={q} onClick={() => ask(q)} style={{
-                  padding:"7px 12px", borderRadius:999, border:"1px solid #3b3563",
-                  background:"transparent", color:"#8B7FB8", fontSize:12.5, cursor:"pointer", fontFamily:"inherit",
+                  padding:"7px 12px", borderRadius:999, border:"1px solid rgba(123,134,213,0.28)",
+                  background:"transparent", color:"#6E7BA8", fontSize:12.5, cursor:"pointer", fontFamily:"inherit",
                 }}>{q}</button>
               ))}
             </div>
+            {thinking && (
+              <div style={{ color:"#7B86D5", fontSize:13, fontStyle:"italic", padding:"4px 2px 10px" }}>
+                🌙 Lúa está leyendo los astros...
+              </div>
+            )}
             <div style={{ display:"flex", gap:8 }}>
               <input
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key==="Enter" && ask(input)}
-                placeholder="Pregúntale a Lúa sobre tu día..."
+                placeholder={thinking ? "Consultando..." : "Pregúntale a Lúa sobre tu día..."}
                 style={{
-                  flex:1, background:"#1d1a38", border:"1px solid #3b3563", borderRadius:10,
-                  color:"#EDE7F6", padding:"11px 13px", fontSize:15, outline:"none", fontFamily:"inherit",
+                  flex:1, background: "rgba(255,255,255,0.9)", border:"1px solid rgba(123,134,213,0.28)", borderRadius:12,
+                  color:"#142D4D", padding:"11px 13px", fontSize:15, outline:"none", fontFamily:"inherit",
                 }}
               />
               <button onClick={() => ask(input)} style={{
-                padding:"0 18px", borderRadius:10, border:"1px solid #C9A24B",
-                background:"linear-gradient(180deg, #d8b25e, #b8923f)",
-                color:"#1a1408", fontSize:18, cursor:"pointer", fontFamily:"inherit",
+                padding:"0 18px", borderRadius:12, border:"1px solid #7B86D5",
+                background: "linear-gradient(135deg, #8E97DE, #7B86D5 55%, #6470C4)", boxShadow: "0 8px 24px rgba(123,134,213,0.38), inset 0 1px 0 rgba(255,255,255,0.28)",
+                color:"#FFFFFF", fontSize:18, cursor:"pointer", fontFamily:"inherit",
               }}>›</button>
             </div>
           </>
@@ -1321,9 +1380,9 @@ function AuthModal({ onLogin, onClose }) {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
-  const inp = { width:"100%", background:"#1d1a38", border:"1px solid #3b3563", borderRadius:10,
-    color:"#EDE7F6", padding:"11px 13px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:10 };
-  const lbl = { fontSize:11, letterSpacing:"0.14em", textTransform:"uppercase", color:"#8B7FB8", marginBottom:5, display:"block" };
+  const inp = { width:"100%", background: "rgba(255,255,255,0.9)", border:"1px solid rgba(123,134,213,0.28)", borderRadius:12,
+    color:"#142D4D", padding:"11px 13px", fontSize:15, outline:"none", fontFamily:"inherit", marginBottom:10 };
+  const lbl = { fontSize:11, letterSpacing:"0.14em", textTransform:"uppercase", color:"#6E7BA8", marginBottom:5, display:"block" };
 
   const doLogin = async () => {
     if (!username || !password) { setErr("Completa todos los campos."); return; }
@@ -1373,20 +1432,20 @@ function AuthModal({ onLogin, onClose }) {
   };
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:16 }}>
-      <div style={{ background:"#1a1733", border:"1px solid #2e2952", borderRadius:20, padding:28, width:"100%", maxWidth:380, position:"relative" }}>
-        <button onClick={onClose} style={{ position:"absolute", top:14, right:16, background:"none", border:"none", color:"#8B7FB8", fontSize:20, cursor:"pointer" }}>✕</button>
+    <div style={{ position:"fixed", inset:0, background:"rgba(37,70,141,0.22)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:16 }}>
+      <div style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border:"1px solid rgba(123,134,213,0.16)", borderRadius:26, padding:28, width:"100%", maxWidth:380, position:"relative" }}>
+        <button onClick={onClose} style={{ position:"absolute", top:14, right:16, background:"none", border:"none", color:"#6E7BA8", fontSize:20, cursor:"pointer" }}>✕</button>
         <div style={{ textAlign:"center", marginBottom:20 }}>
-          <div style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:26, fontWeight:600, color:"#F5EFE2" }}>
+          <div style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:26, fontWeight:600, color:"#142D4D" }}>
             {tab === "login" ? "Iniciar sesión" : "Crear cuenta"}
           </div>
-          <div style={{ color:"#8B7FB8", fontSize:13, marginTop:4 }}>Carta Natal · Astro App</div>
+          <div style={{ color:"#6E7BA8", fontSize:13, marginTop:4 }}>Carta Natal · Astro App</div>
         </div>
-        <div style={{ display:"flex", borderRadius:10, overflow:"hidden", border:"1px solid #2e2952", marginBottom:20 }}>
+        <div style={{ display:"flex", borderRadius:12, overflow:"hidden", border:"1px solid rgba(123,134,213,0.16)", marginBottom:20 }}>
           {["login","register"].map(t => (
             <button key={t} onClick={() => { setTab(t); setErr(""); }} style={{
               flex:1, padding:"10px 0", border:"none", cursor:"pointer", fontFamily:"inherit", fontSize:13, fontWeight:500,
-              background: tab===t ? "#C9A24B" : "transparent", color: tab===t ? "#1a1408" : "#8B7FB8",
+              background: tab===t ? "#7B86D5" : "transparent", color: tab===t ? "#FFFFFF" : "#6E7BA8",
             }}>{t==="login" ? "Iniciar sesión" : "Registrarse"}</button>
           ))}
         </div>
@@ -1402,11 +1461,11 @@ function AuthModal({ onLogin, onClose }) {
           onKeyDown={e => e.key === "Enter" && (tab==="login" ? doLogin() : doRegister())}
           placeholder="••••••••" />
 
-        {err && <p style={{ color:"#e08585", fontSize:13, margin:"0 0 10px" }}>{err}</p>}
+        {err && <p style={{ color:"#C0566B", fontSize:13, margin:"0 0 10px" }}>{err}</p>}
 
         <button onClick={tab==="login" ? doLogin : doRegister} disabled={loading} style={{
-          width:"100%", padding:"13px", borderRadius:12, border:"1px solid #C9A24B",
-          background:"linear-gradient(180deg, #d8b25e, #b8923f)", color:"#1a1408",
+          width:"100%", padding:"13px", borderRadius:14, border:"1px solid #7B86D5",
+          background: "linear-gradient(135deg, #8E97DE, #7B86D5 55%, #6470C4)", boxShadow: "0 8px 24px rgba(123,134,213,0.38), inset 0 1px 0 rgba(255,255,255,0.28)", color:"#FFFFFF",
           fontSize:15, fontWeight:500, cursor:"pointer", fontFamily:"inherit",
         }}>
           {loading ? "Cargando..." : (tab==="login" ? "Entrar" : "Crear cuenta gratis")}
@@ -1420,10 +1479,28 @@ function AuthModal({ onLogin, onClose }) {
 function PlansModal({ user, onClose, onUpgrade }) {
   const [step, setStep] = useState("plans"); // plans | payment | confirm | success
   const [loading, setLoading] = useState(false);
+  const [polling, setPolling] = useState(false);
   const [err, setErr] = useState("");
 
-  const activatePremium = async () => {
-    setLoading(true); setErr("");
+  // Poll Stripe webhook result via /api/check-premium
+  const pollPremium = async (email, attempts = 0) => {
+    if (attempts > 20) {
+      setPolling(false);
+      setErr("El pago no se detectó aún. Si ya pagaste, toca 'Ya pagué' para activar manualmente.");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/check-premium?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      if (data.isPremium) {
+        await activateLocal();
+        return;
+      }
+    } catch {}
+    setTimeout(() => pollPremium(email, attempts + 1), 2000);
+  };
+
+  const activateLocal = async () => {
     try {
       if (!user) throw new Error("Inicia sesion primero.");
       const updated = {
@@ -1435,6 +1512,7 @@ function PlansModal({ user, onClose, onUpgrade }) {
         createdAt: user.createdAt || Date.now(),
       };
       await dbSaveUser(updated);
+      setPolling(false);
       setStep("success");
       setTimeout(() => onUpgrade(updated), 1800);
     } catch (e) {
@@ -1444,30 +1522,45 @@ function PlansModal({ user, onClose, onUpgrade }) {
     }
   };
 
+  const activatePremium = async () => {
+    setLoading(true); setErr("");
+    // Try webhook verification first; fallback to manual activation
+    const email = user?.email;
+    if (email) {
+      try {
+        const res = await fetch(`/api/check-premium?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        if (data.isPremium) { await activateLocal(); return; }
+      } catch {}
+    }
+    // Webhook not confirmed yet — activate manually (user has confirmed they paid)
+    await activateLocal();
+  };
+
   // Stripe URL with prefilled email
   const stripeUrl = STRIPE_PAYMENT_LINK_URL +
     (user?.email ? "?prefilled_email=" + encodeURIComponent(user.email) : "");
 
   const planBox = (title, price, features, isCurrent, onAction, label, highlighted) => (
-    <div style={{ background: highlighted ? "linear-gradient(160deg,#2a1e50,#1e1a38)" : "#1a1733",
-      border:`1px solid ${highlighted ? "#C9A24B" : "#2e2952"}`, borderRadius:16, padding:22, flex:1 }}>
-      {highlighted && <div style={{ textAlign:"center", color:"#C9A24B", fontSize:10,
+    <div style={{ background: highlighted ? "linear-gradient(160deg, rgba(201,162,213,0.30), rgba(123,134,213,0.18))" : "rgba(255,255,255,0.78)",
+      border:`1px solid ${highlighted ? "#7B86D5" : "rgba(123,134,213,0.20)"}`, borderRadius:22, padding:22, flex:1 }}>
+      {highlighted && <div style={{ textAlign:"center", color:"#7B86D5", fontSize:10,
         letterSpacing:"0.3em", marginBottom:8, textTransform:"uppercase" }}>★ Recomendado</div>}
       <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:600,
-        color:"#F5EFE2", marginBottom:4 }}>{title}</div>
-      <div style={{ fontSize:28, fontWeight:700, color: highlighted ? "#C9A24B" : "#8B7FB8",
+        color:"#142D4D", marginBottom:4 }}>{title}</div>
+      <div style={{ fontSize:28, fontWeight:700, color: highlighted ? "#7B86D5" : "#6E7BA8",
         marginBottom:16 }}>{price}</div>
       {features.map((f,i) => (
-        <div key={i} style={{ fontSize:13, color: f.inc ? "#EDE7F6":"#6f659b",
+        <div key={i} style={{ fontSize:13, color: f.inc ? "#142D4D":"#8A94BC",
           marginBottom:8, display:"flex", gap:8 }}>
-          <span style={{ color: f.inc ? "#7fa8d9":"#6f659b" }}>{f.inc?"✓":"✗"}</span>{f.text}
+          <span style={{ color: f.inc ? "#7B86D5":"#8A94BC" }}>{f.inc?"✓":"✗"}</span>{f.text}
         </div>
       ))}
       <button onClick={onAction} disabled={isCurrent} style={{
-        width:"100%", marginTop:16, padding:"12px", borderRadius:10,
-        border: highlighted ? "1px solid #C9A24B" : "1px solid #3b3563",
-        background: highlighted ? "linear-gradient(180deg,#d8b25e,#b8923f)" : "transparent",
-        color: highlighted ? "#1a1408" : "#8B7FB8",
+        width:"100%", marginTop:16, padding:"12px", borderRadius:12,
+        border: highlighted ? "1px solid #7B86D5" : "1px solid rgba(123,134,213,0.28)",
+        background: highlighted ? "linear-gradient(180deg,#8E97DE,#6470C4)" : "transparent",
+        color: highlighted ? "#FFFFFF" : "#6E7BA8",
         fontSize:14, fontWeight:500, cursor: isCurrent ? "default":"pointer",
         fontFamily:"inherit", opacity: isCurrent ? 0.5 : 1,
       }}>{isCurrent ? "Plan actual" : label}</button>
@@ -1475,15 +1568,15 @@ function PlansModal({ user, onClose, onUpgrade }) {
   );
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.78)",
+    <div style={{ position:"fixed", inset:0, background:"rgba(37,70,141,0.22)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)",
       display:"flex", alignItems:"center", justifyContent:"center",
       zIndex:1000, padding:16, overflowY:"auto" }}>
-      <div style={{ background:"#141229", border:"1px solid #2e2952", borderRadius:20,
+      <div style={{ background:"rgba(255,255,255,0.88)", backdropFilter:"blur(28px)", WebkitBackdropFilter:"blur(28px)", boxShadow:"0 24px 70px rgba(37,70,141,0.18)", border:"1px solid rgba(123,134,213,0.16)", borderRadius:26,
         padding:28, width:"100%", maxWidth:520, position:"relative", margin:"auto" }}>
 
         {step !== "success" && (
           <button onClick={onClose} style={{ position:"absolute", top:14, right:16,
-            background:"none", border:"none", color:"#8B7FB8", fontSize:20, cursor:"pointer" }}>✕</button>
+            background:"none", border:"none", color:"#6E7BA8", fontSize:20, cursor:"pointer" }}>✕</button>
         )}
 
         {/* PLANS */}
@@ -1491,8 +1584,8 @@ function PlansModal({ user, onClose, onUpgrade }) {
           <>
             <div style={{ textAlign:"center", marginBottom:24 }}>
               <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:30,
-                fontWeight:600, color:"#F5EFE2" }}>Elige tu plan</div>
-              <div style={{ color:"#8B7FB8", fontSize:14, marginTop:4 }}>
+                fontWeight:600, color:"#142D4D" }}>Elige tu plan</div>
+              <div style={{ color:"#6E7BA8", fontSize:14, marginTop:4 }}>
                 Accede a todas las herramientas cósmicas
               </div>
             </div>
@@ -1504,15 +1597,15 @@ function PlansModal({ user, onClose, onUpgrade }) {
                  {inc:false,text:"Intérprete Astral ilimitado"},
                  {inc:false,text:"Guía Cósmica Diaria con Lúa"}],
                 false, onClose, "Continuar gratis", false)}
-              {planBox("Premium","$5 / mes",
+              {planBox("Premium","$7 / mes",
                 [{inc:true,text:"Carta natal completa + rueda astral"},
                  {inc:true,text:"Tabla de posiciones y aspectos"},
                  {inc:true,text:"Intérprete Astral ilimitado"},
                  {inc:true,text:"Guía Cósmica Diaria con Lúa"},
                  {inc:true,text:"Soporte prioritario"}],
-                user?.isPremium, ()=>setStep("payment"), "Suscribirse — $5/mes", true)}
+                user?.isPremium, ()=>setStep("payment"), "Suscribirse — $7/mes", true)}
             </div>
-            <p style={{ textAlign:"center", color:"#6f659b", fontSize:11, marginTop:16 }}>
+            <p style={{ textAlign:"center", color:"#8A94BC", fontSize:11, marginTop:16 }}>
               Cancela cuando quieras · Pago seguro vía Stripe
             </p>
           </>
@@ -1522,28 +1615,28 @@ function PlansModal({ user, onClose, onUpgrade }) {
         {step === "payment" && (
           <>
             <button onClick={()=>setStep("plans")} style={{ background:"none",
-              border:"none", color:"#8B7FB8", cursor:"pointer", marginBottom:16, fontSize:13 }}>
+              border:"none", color:"#6E7BA8", cursor:"pointer", marginBottom:16, fontSize:13 }}>
               ← Volver
             </button>
             <div style={{ textAlign:"center", marginBottom:20 }}>
               <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:26,
-                fontWeight:600, color:"#F5EFE2" }}>Suscripción Premium</div>
-              <div style={{ color:"#C9A24B", fontSize:26, fontWeight:700, margin:"8px 0" }}>
-                $5 / mes
+                fontWeight:600, color:"#142D4D" }}>Suscripción Premium</div>
+              <div style={{ color:"#7B86D5", fontSize:26, fontWeight:700, margin:"8px 0" }}>
+                $7 / mes
               </div>
-              <div style={{ color:"#8B7FB8", fontSize:13, lineHeight:1.6 }}>
+              <div style={{ color:"#6E7BA8", fontSize:13, lineHeight:1.6 }}>
                 Toca el botón para ir a Stripe.<br/>
                 Al regresar aquí tu Premium se activa con un toque.
               </div>
             </div>
-            <div style={{ background:"#1a1733", border:"1px solid #2e2952",
-              borderRadius:12, padding:16, marginBottom:18 }}>
+            <div style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border:"1px solid rgba(123,134,213,0.16)",
+              borderRadius:14, padding:16, marginBottom:18 }}>
               {[{text:"Intérprete Astral ilimitado"},
                 {text:"Guía Cósmica Diaria con Lúa"},
                 {text:"Cancela cuando quieras"}].map((f,i)=>(
-                <div key={i} style={{ fontSize:14, color:"#EDE7F6",
+                <div key={i} style={{ fontSize:14, color:"#142D4D",
                   marginBottom:i<2?8:0, display:"flex", gap:8 }}>
-                  <span style={{color:"#7fa8d9"}}>✓</span>{f.text}
+                  <span style={{color:"#7B86D5"}}>✓</span>{f.text}
                 </div>
               ))}
             </div>
@@ -1553,19 +1646,23 @@ function PlansModal({ user, onClose, onUpgrade }) {
               href={stripeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setTimeout(() => setStep("confirm"), 800)}
+              onClick={() => setTimeout(() => {
+          setStep("confirm");
+          setPolling(true);
+          if (user?.email) pollPremium(user.email);
+        }, 800)}
               style={{
                 display:"block", width:"100%", padding:"15px 0",
-                borderRadius:12, border:"1px solid #C9A24B",
-                background:"linear-gradient(180deg,#d8b25e,#b8923f)",
-                color:"#1a1408", fontSize:16, fontWeight:600,
+                borderRadius:14, border:"1px solid #7B86D5",
+                background:"linear-gradient(180deg,#8E97DE,#6470C4)",
+                color:"#FFFFFF", fontSize:16, fontWeight:600,
                 fontFamily:"inherit", textAlign:"center",
                 textDecoration:"none", boxSizing:"border-box",
                 cursor:"pointer", marginBottom:10,
               }}>
-              💳 Pagar con Stripe — $5/mes
+              💳 Pagar con Stripe — $7/mes
             </a>
-            <div style={{ textAlign:"center", color:"#6f659b", fontSize:11 }}>
+            <div style={{ textAlign:"center", color:"#8A94BC", fontSize:11 }}>
               🔒 Pago cifrado · Stripe Inc.
             </div>
           </>
@@ -1575,18 +1672,18 @@ function PlansModal({ user, onClose, onUpgrade }) {
         {step === "confirm" && (
           <>
             {/* Stripe link still accessible at top */}
-            <div style={{ background:"#1a1733", border:"1px solid #2e2952",
-              borderRadius:12, padding:14, marginBottom:20,
+            <div style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border:"1px solid rgba(123,134,213,0.16)",
+              borderRadius:14, padding:14, marginBottom:20,
               display:"flex", alignItems:"center", justifyContent:"space-between", gap:12 }}>
               <div>
-                <div style={{ color:"#C9A24B", fontSize:12, fontWeight:600, marginBottom:2 }}>
+                <div style={{ color:"#7B86D5", fontSize:12, fontWeight:600, marginBottom:2 }}>
                   ¿No completaste el pago aún?
                 </div>
-                <div style={{ color:"#8B7FB8", fontSize:12 }}>Abre Stripe de nuevo</div>
+                <div style={{ color:"#6E7BA8", fontSize:12 }}>Abre Stripe de nuevo</div>
               </div>
               <a href={stripeUrl} target="_blank" rel="noopener noreferrer"
-                style={{ padding:"8px 14px", borderRadius:8, border:"1px solid #C9A24B",
-                  background:"transparent", color:"#C9A24B", fontSize:13,
+                style={{ padding:"8px 14px", borderRadius:8, border:"1px solid #7B86D5",
+                  background:"transparent", color:"#7B86D5", fontSize:13,
                   fontWeight:500, textDecoration:"none", whiteSpace:"nowrap" }}>
                 💳 Ir a Stripe
               </a>
@@ -1595,35 +1692,35 @@ function PlansModal({ user, onClose, onUpgrade }) {
             <div style={{ textAlign:"center", marginBottom:24 }}>
               <div style={{ fontSize:44, marginBottom:12 }}>🌟</div>
               <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:26,
-                color:"#F5EFE2", marginBottom:8 }}>
+                color:"#142D4D", marginBottom:8 }}>
                 ¿Completaste el pago?
               </div>
-              <div style={{ color:"#8B7FB8", fontSize:14, lineHeight:1.7 }}>
-                Si Stripe mostró <strong style={{color:"#4caf80"}}>"Thanks for subscribing"</strong>,<br/>
+              <div style={{ color:"#6E7BA8", fontSize:14, lineHeight:1.7 }}>
+                Si Stripe mostró <strong style={{color:"#394D38"}}>"Thanks for subscribing"</strong>,<br/>
                 toca el botón para activar tu cuenta.
               </div>
             </div>
 
-            {err && <p style={{ color:"#e08585", fontSize:13, textAlign:"center",
+            {err && <p style={{ color:"#C0566B", fontSize:13, textAlign:"center",
               margin:"0 0 14px" }}>{err}</p>}
 
             <button onClick={activatePremium} disabled={loading} style={{
-              width:"100%", padding:"16px", borderRadius:12, border:"1px solid #C9A24B",
-              background: loading ? "#7a6a3f" : "linear-gradient(180deg,#d8b25e,#b8923f)",
-              color:"#1a1408", fontSize:16, fontWeight:700,
+              width:"100%", padding:"16px", borderRadius:14, border:"1px solid #7B86D5",
+              background: loading ? "#B8BFE4" : "linear-gradient(135deg,#8E97DE,#6470C4)",
+              color:"#FFFFFF", fontSize:16, fontWeight:700,
               cursor: loading ? "default":"pointer", fontFamily:"inherit", marginBottom:10,
             }}>
               {loading ? "Activando..." : "✓ Sí, pagué — Activar Premium ahora"}
             </button>
 
             <button onClick={()=>setStep("payment")} disabled={loading} style={{
-              width:"100%", padding:"11px", borderRadius:10, border:"1px solid #3b3563",
-              background:"transparent", color:"#8B7FB8", fontSize:13,
+              width:"100%", padding:"11px", borderRadius:12, border:"1px solid rgba(123,134,213,0.28)",
+              background:"transparent", color:"#6E7BA8", fontSize:13,
               cursor:"pointer", fontFamily:"inherit",
             }}>
               ← Volver al pago
             </button>
-            <p style={{ textAlign:"center", color:"#6f659b", fontSize:11, marginTop:12 }}>
+            <p style={{ textAlign:"center", color:"#8A94BC", fontSize:11, marginTop:12 }}>
               ¿Problemas? soporte@tuapp.com
             </p>
           </>
@@ -1634,8 +1731,8 @@ function PlansModal({ user, onClose, onUpgrade }) {
           <div style={{ textAlign:"center", padding:"24px 0" }}>
             <div style={{ fontSize:60, marginBottom:16 }}>✨</div>
             <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:32,
-              color:"#C9A24B", marginBottom:10 }}>¡Bienvenido a Premium!</div>
-            <div style={{ color:"#8B7FB8", fontSize:15, lineHeight:1.7 }}>
+              color:"#7B86D5", marginBottom:10 }}>¡Bienvenido a Premium!</div>
+            <div style={{ color:"#6E7BA8", fontSize:15, lineHeight:1.7 }}>
               Tu cuenta tiene acceso completo al<br/>
               Intérprete Astral y a la Guía Cósmica con Lúa.
             </div>
@@ -1653,35 +1750,35 @@ const LOGO_B64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAsCAYAAADm
 function UserBar({ user, onLogin, onLogout, onPlans }) {
   return (
     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"10px 16px",
-      background:"#0e0c20", borderBottom:"1px solid #2e2952", marginBottom:0 }}>
+      background:"rgba(255,255,255,0.75)", backdropFilter:"blur(22px)", WebkitBackdropFilter:"blur(22px)", borderBottom:"1px solid rgba(123,134,213,0.18)", position:"sticky", top:0, zIndex:100, marginBottom:0 }}>
       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
         <img src={LOGO_B64} alt="Mystika Divina" style={{ height:40, width:"auto", objectFit:"contain" }} />
-        <div style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:16, color:"#C9A24B", fontStyle:"italic", lineHeight:1.1 }}>
+        <div style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:16, color:"#7B86D5", fontStyle:"italic", lineHeight:1.1 }}>
           <div>✦ Carta Natal</div>
-          <div style={{ fontSize:10, letterSpacing:"0.18em", textTransform:"uppercase", color:"#6f659b", fontStyle:"normal" }}>Mystika Divina</div>
+          <div style={{ fontSize:10, letterSpacing:"0.18em", textTransform:"uppercase", color:"#8A94BC", fontStyle:"normal" }}>Mystika Divina</div>
         </div>
       </div>
       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
         {user ? (<>
-          <span style={{ background: user.isPremium ? "#1e3a2a" : "#1a1733",
-            border:`1px solid ${user.isPremium ? "#4caf80" : "#3b3563"}`, borderRadius:20,
-            padding:"3px 10px", fontSize:11, color: user.isPremium ? "#4caf80" : "#8B7FB8" }}>
+          <span style={{ background: user.isPremium ? "rgba(57,77,56,0.12)" : "rgba(123,134,213,0.12)",
+            border:`1px solid ${user.isPremium ? "rgba(57,77,56,0.40)" : "rgba(123,134,213,0.30)"}`, borderRadius:26,
+            padding:"3px 10px", fontSize:11, color: user.isPremium ? "#394D38" : "#6E7BA8" }}>
             {user.isPremium ? "★ Premium" : "Básico"}
           </span>
-          <span style={{ fontSize:13, color:"#cfc6e8" }}>{user.username}</span>
+          <span style={{ fontSize:13, color:"#25468D" }}>{user.username}</span>
           {!user.isPremium && (
-            <button onClick={onPlans} style={{ padding:"6px 12px", borderRadius:8, border:"1px solid #C9A24B",
-              background:"transparent", color:"#C9A24B", fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>
+            <button onClick={onPlans} style={{ padding:"6px 12px", borderRadius:8, border:"1px solid #7B86D5",
+              background:"transparent", color:"#7B86D5", fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>
               Mejorar plan
             </button>
           )}
-          <button onClick={onLogout} style={{ padding:"6px 10px", borderRadius:8, border:"1px solid #3b3563",
-            background:"transparent", color:"#6f659b", fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>
+          <button onClick={onLogout} style={{ padding:"6px 10px", borderRadius:8, border:"1px solid rgba(123,134,213,0.28)",
+            background:"transparent", color:"#8A94BC", fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>
             Salir
           </button>
         </>) : (
-          <button onClick={onLogin} style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #C9A24B",
-            background:"linear-gradient(180deg, #d8b25e, #b8923f)", color:"#1a1408",
+          <button onClick={onLogin} style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #7B86D5",
+            background: "linear-gradient(135deg, #8E97DE, #7B86D5 55%, #6470C4)", boxShadow: "0 8px 24px rgba(123,134,213,0.38), inset 0 1px 0 rgba(255,255,255,0.28)", color:"#FFFFFF",
             fontSize:13, fontWeight:500, cursor:"pointer", fontFamily:"inherit" }}>
             Iniciar sesión
           </button>
@@ -1694,32 +1791,32 @@ function UserBar({ user, onLogin, onLogout, onPlans }) {
 // ── PaywallCard ───────────────────────────────────────────────────────────────
 function PaywallCard({ onUpgrade, onLogin, isLoggedIn, reason }) {
   return (
-    <div style={{ background:"linear-gradient(160deg, #1e1a38, #2a1e50)", border:"1px solid #C9A24B66",
-      borderRadius:16, padding:28, marginBottom:26, textAlign:"center" }}>
+    <div style={{ background:"linear-gradient(160deg, rgba(123,134,213,0.18), rgba(201,162,213,0.30))", border:"1px solid #7B86D566",
+      borderRadius:22, padding:28, marginBottom:26, textAlign:"center" }}>
       <div style={{ fontSize:36, marginBottom:10 }}>🔒</div>
-      <div style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:24, fontWeight:600, color:"#F5EFE2", marginBottom:8 }}>
+      <div style={{ fontFamily:"'Cormorant Garamond', serif", fontSize:24, fontWeight:600, color:"#142D4D", marginBottom:8 }}>
         {reason === "lua" ? "Guía Cósmica Diaria — Exclusivo Premium" : "Límite de preguntas alcanzado"}
       </div>
-      <div style={{ color:"#8B7FB8", fontSize:14, marginBottom:20, lineHeight:1.6 }}>
+      <div style={{ color:"#6E7BA8", fontSize:14, marginBottom:20, lineHeight:1.6 }}>
         {reason === "lua"
           ? "Lúa, tu guía cósmica diaria personalizada, es exclusiva del plan Premium. Actualiza para desbloquear lecturas diarias con tránsitos calculados para tu carta."
           : `El plan Básico incluye ${FREE_Q_LIMIT} preguntas al Intérprete Astral. Mejora a Premium para conversaciones ilimitadas y acceso a Lúa.`}
       </div>
       <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
-        <button onClick={onUpgrade} style={{ padding:"12px 24px", borderRadius:12, border:"1px solid #C9A24B",
-          background:"linear-gradient(180deg, #d8b25e, #b8923f)", color:"#1a1408",
+        <button onClick={onUpgrade} style={{ padding:"12px 24px", borderRadius:14, border:"1px solid #7B86D5",
+          background: "linear-gradient(135deg, #8E97DE, #7B86D5 55%, #6470C4)", boxShadow: "0 8px 24px rgba(123,134,213,0.38), inset 0 1px 0 rgba(255,255,255,0.28)", color:"#FFFFFF",
           fontSize:15, fontWeight:500, cursor:"pointer", fontFamily:"inherit" }}>
           ★ Ver planes Premium
         </button>
         {!isLoggedIn && (
-          <button onClick={onLogin} style={{ padding:"12px 18px", borderRadius:12, border:"1px solid #3b3563",
-            background:"transparent", color:"#8B7FB8", fontSize:14, cursor:"pointer", fontFamily:"inherit" }}>
+          <button onClick={onLogin} style={{ padding:"12px 18px", borderRadius:14, border:"1px solid rgba(123,134,213,0.28)",
+            background:"transparent", color:"#6E7BA8", fontSize:14, cursor:"pointer", fontFamily:"inherit" }}>
             Ya tengo cuenta
           </button>
         )}
       </div>
       <div style={{ display:"flex", gap:20, justifyContent:"center", marginTop:16, flexWrap:"wrap" }}>
-        {[["✓ Intérprete ilimitado","#7fa8d9"],["✓ Guía Cósmica Lúa","#C9A24B"],["✓ Solo $5/mes","#4caf80"]].map(([t,c])=>(
+        {[["✓ Intérprete ilimitado","#7B86D5"],["✓ Guía Cósmica Lúa","#7B86D5"],["✓ Solo $7/mes","#394D38"]].map(([t,c])=>(
           <span key={t} style={{ fontSize:12, color:c }}>{t}</span>
         ))}
       </div>
@@ -1779,11 +1876,37 @@ export default function CartaNatalApp() {
 
   const generate = () => {
     setError("");
-    const [y, m, d] = form.date.split("-").map(Number);
-    const [hh, mm] = form.time.split(":").map(Number);
+    // Validaciones explícitas campo por campo
+    if (!form.name || !form.name.trim()) { setError("Escribe tu nombre."); return; }
+    if (!form.date) { setError("Selecciona tu fecha de nacimiento."); return; }
+    if (!form.time) { setError("Selecciona tu hora de nacimiento."); return; }
+
+    const dateParts = form.date.split("-").map(Number);
+    const timeParts = form.time.split(":").map(Number);
+    if (dateParts.length < 3 || dateParts.some(isNaN)) { setError("Fecha inválida. Usa el selector de fecha."); return; }
+    if (timeParts.length < 2 || timeParts.some(isNaN)) { setError("Hora inválida. Usa el selector de hora."); return; }
+
+    const [y, m, d] = dateParts;
+    const [hh, mm] = timeParts;
     const lat = parseFloat(form.lat), lon = parseFloat(form.lon), tz = parseFloat(form.tz);
-    if (!y || isNaN(lat) || isNaN(lon) || isNaN(tz) || isNaN(hh)) { setError("Revisa la fecha, hora y coordenadas."); return; }
-    setChartData(computeChart({ y, m, d, hh, mm, tz, lat, lon }));
+
+    if (isNaN(lat) || lat < -90 || lat > 90) { setError("Latitud inválida (debe estar entre -90 y 90)."); return; }
+    if (isNaN(lon) || lon < -180 || lon > 180) { setError("Longitud inválida (debe estar entre -180 y 180)."); return; }
+    if (isNaN(tz) || tz < -12 || tz > 14) { setError("Zona horaria (UTC) inválida."); return; }
+    if (y < 1800 || y > 2100) { setError("El año debe estar entre 1800 y 2100."); return; }
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) { setError("Hora fuera de rango."); return; }
+
+    try {
+      const chart = computeChart({ y, m, d, hh, mm, tz, lat, lon });
+      // Verificación final: si algún cálculo produjo NaN, no mostrar la carta
+      if (!chart || isNaN(chart.asc) || isNaN(chart.mc) || chart.planets.some(p => isNaN(p.lon))) {
+        setError("No se pudo calcular la carta con estos datos. Verifica la fecha, hora y lugar.");
+        return;
+      }
+      setChartData(chart);
+    } catch (e) {
+      setError("Error al calcular la carta. Revisa los datos ingresados.");
+    }
   };
 
   const downloadPNG = () => {
@@ -1794,7 +1917,7 @@ export default function CartaNatalApp() {
       const c = document.createElement("canvas");
       c.width = 1400; c.height = 1400;
       const g = c.getContext("2d");
-      g.fillStyle = "#141229"; g.fillRect(0, 0, 1400, 1400);
+      g.fillStyle = "rgba(255,255,255,0.88)"; g.fillRect(0, 0, 1400, 1400);
       g.drawImage(img, 0, 0, 1400, 1400);
       const a = document.createElement("a");
       a.download = `carta-natal-${(form.name || "sin-nombre").toLowerCase().replace(/\s+/g, "-")}.png`;
@@ -1808,26 +1931,78 @@ export default function CartaNatalApp() {
   const sunF = chartData ? fmtPos(chartData.planets[0].lon) : null;
 
   const inputStyle = {
-    width: "100%", background: "#1d1a38", border: "1px solid #3b3563", borderRadius: 10,
-    color: "#EDE7F6", padding: "11px 13px", fontSize: 15, outline: "none", fontFamily: "inherit",
+    width: "100%", background: "rgba(255,255,255,0.9)", border: "1px solid rgba(123,134,213,0.28)", borderRadius: 12,
+    color: "#142D4D", padding: "11px 13px", fontSize: 15, outline: "none", fontFamily: "inherit",
   };
-  const labelStyle = { fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "#8B7FB8", marginBottom: 6, display: "block" };
+  const labelStyle = { fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "#6E7BA8", marginBottom: 6, display: "block" };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#141229", color: "#EDE7F6", fontFamily: "'Jost', system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 90% 55% at 15% -5%, rgba(201,162,213,0.42), transparent 60%), radial-gradient(ellipse 70% 45% at 92% 8%, rgba(123,134,213,0.34), transparent 60%), radial-gradient(ellipse 80% 55% at 50% 108%, rgba(123,134,213,0.22), transparent 65%), linear-gradient(170deg, #FBF9FE 0%, #F3EFFA 45%, #EDE9F8 100%)", color: "#142D4D", fontFamily: "'Jost', system-ui, sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap');
         input::-webkit-calendar-picker-indicator { filter: invert(0.8); }
-        select option { background:#1d1a38; }
+        select option { background:#FFFFFF; color:#142D4D; }
         * { box-sizing: border-box; }
+        button { transition: transform .25s cubic-bezier(.2,.8,.3,1), filter .25s ease, box-shadow .25s ease; }
+        button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.04); }
+        button:active:not(:disabled) { transform: translateY(0) scale(.99); }
+        input, select { transition: border-color .2s ease, box-shadow .2s ease; }
+        input:focus, select:focus { border-color: rgba(123,134,213,0.75) !important; box-shadow: 0 0 0 4px rgba(123,134,213,0.14); }
+        input::placeholder { color: #9AA3C4; }
+
+        @keyframes auroraDrift {
+          0%   { transform: translate(0,0) scale(1);         opacity:.55 }
+          33%  { transform: translate(4vw,-3vh) scale(1.14); opacity:.75 }
+          66%  { transform: translate(-3vw,3vh) scale(.94);  opacity:.45 }
+          100% { transform: translate(0,0) scale(1);         opacity:.55 }
+        }
+        .aurora { position:fixed; border-radius:50%; filter:blur(70px); pointer-events:none; z-index:0;
+                  animation: auroraDrift 26s ease-in-out infinite; }
+
+        @keyframes sparkle {
+          0%,100% { opacity:.15; transform: translateY(0) scale(.7) }
+          50%     { opacity:.95; transform: translateY(-14px) scale(1.25) }
+        }
+        .mystic-star { position:fixed; border-radius:50%; pointer-events:none; z-index:0;
+                       background: radial-gradient(circle, #FFFFFF 0%, #C9A2D5 45%, rgba(123,134,213,0) 70%);
+                       box-shadow: 0 0 8px rgba(201,162,213,0.9);
+                       animation: sparkle 6s ease-in-out infinite; }
+
+        @keyframes slowSpin { to { transform: rotate(360deg) } }
+        .halo { position:fixed; border-radius:50%; pointer-events:none; z-index:0;
+                border:1px solid rgba(123,134,213,0.16);
+                animation: slowSpin 90s linear infinite; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .aurora, .mystic-star, .halo { animation: none !important; }
+        }
       `}</style>
+
+      {/* ══ Capa ambiental mística ══ */}
+      <div className="aurora" style={{ left:"-12%", top:"-8%", width:"52vw", height:"52vw",
+        background:"radial-gradient(circle, rgba(201,162,213,0.55), transparent 70%)", animationDelay:"0s" }} />
+      <div className="aurora" style={{ right:"-14%", top:"12%", width:"46vw", height:"46vw",
+        background:"radial-gradient(circle, rgba(123,134,213,0.45), transparent 70%)", animationDelay:"-9s" }} />
+      <div className="aurora" style={{ left:"18%", bottom:"-16%", width:"58vw", height:"58vw",
+        background:"radial-gradient(circle, rgba(37,70,141,0.20), transparent 70%)", animationDelay:"-17s" }} />
+
+      <div className="halo" style={{ left:"50%", top:"14%", width:"70vw", height:"70vw", marginLeft:"-35vw" }} />
+      <div className="halo" style={{ left:"50%", top:"26%", width:"44vw", height:"44vw", marginLeft:"-22vw",
+        animationDirection:"reverse", animationDuration:"120s" }} />
+
+      {[[8,14,3],[17,42,2],[26,9,4],[34,68,2.5],[43,25,3],[52,82,2],[61,16,3.5],[69,50,2],
+        [78,31,3],[86,71,2.5],[93,20,3],[12,76,2],[47,45,2],[72,88,3],[89,52,2]].map(([x,y,s],i)=>(
+        <div key={"sp"+i} className="mystic-star"
+          style={{ left:x+"%", top:y+"%", width:s*2, height:s*2,
+                   animationDelay:(i*0.55)+"s", animationDuration:(5 + (i%4))+"s" }} />
+      ))}
 
       {/* UserBar */}
       <UserBar user={user} onLogin={() => setShowAuth(true)} onLogout={handleLogout} onPlans={() => setShowPlans(true)} />
 
       {/* Premium activation success banner */}
       {user?.isPremium && user?.premiumSince && (Date.now() - user.premiumSince) < 30000 && (
-        <div style={{ background:"#1e3a2a", borderBottom:"1px solid #4caf80", padding:"10px 16px", textAlign:"center", fontSize:14, color:"#4caf80" }}>
+        <div style={{ background:"rgba(57,77,56,0.10)", borderBottom:"1px solid rgba(57,77,56,0.35)", padding:"10px 16px", textAlign:"center", fontSize:14, color:"#394D38" }}>
           ✨ ¡Suscripción Premium activada! Ya tienes acceso completo al Intérprete y a Lúa.
         </div>
       )}
@@ -1836,20 +2011,20 @@ export default function CartaNatalApp() {
       {showAuth && <AuthModal onLogin={handleLogin} onClose={() => setShowAuth(false)} />}
       {showPlans && <PlansModal user={user} onClose={() => setShowPlans(false)} onUpgrade={handleUpgrade} />}
 
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "28px 16px 60px" }}>
+      <div style={{ maxWidth: 760, margin: "0 auto", padding: "28px 16px 60px", position: "relative", zIndex: 1 }}>
         {/* Encabezado */}
         <header style={{ textAlign: "center", marginBottom: 26 }}>
-          <div style={{ color: "#C9A24B", fontSize: 12, letterSpacing: "0.4em", textTransform: "uppercase" }}>✦ Efemérides ✦</div>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 42, margin: "6px 0 2px", color: "#F5EFE2" }}>
+          <div style={{ color: "#7B86D5", fontSize: 12, letterSpacing: "0.4em", textTransform: "uppercase" }}>✦ Efemérides ✦</div>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: 46, margin: "8px 0 4px", letterSpacing: "-0.02em", color: "#142D4D" }}>
             Carta Natal
           </h1>
-          <p style={{ margin: 0, color: "#8B7FB8", fontSize: 17, fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
+          <p style={{ margin: 0, color: "#6E7BA8", fontSize: 17, fontStyle: "italic", fontFamily: "'Cormorant Garamond', serif" }}>
             El cielo en el instante de tu nacimiento
           </p>
         </header>
 
         {/* Formulario */}
-        <div style={{ background: "#1a1733", border: "1px solid #2e2952", borderRadius: 18, padding: 18, marginBottom: 24 }}>
+        <div style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border: "1px solid rgba(123,134,213,0.16)", borderRadius: 24, padding: 18, marginBottom: 24 }}>
           <div style={{ marginBottom: 14 }}>
             <label style={labelStyle}>Nombre</label>
             <input style={inputStyle} value={form.name} onChange={(e) => upd("name", e.target.value)} placeholder="Tu nombre" />
@@ -1892,13 +2067,13 @@ export default function CartaNatalApp() {
               <input style={inputStyle} value={form.tz} onChange={(e) => upd("tz", e.target.value)} />
             </div>
           </div>
-          <p style={{ fontSize: 12, color: "#6f659b", margin: "0 0 14px" }}>
+          <p style={{ fontSize: 12, color: "#8A94BC", margin: "0 0 14px" }}>
             Si en esa fecha aplicaba horario de verano, ajusta el UTC (p. ej. CDMX en verano era −5).
           </p>
-          {error && <p style={{ color: "#e08585", fontSize: 14, margin: "0 0 12px" }}>{error}</p>}
+          {error && <p style={{ color: "#C0566B", fontSize: 14, margin: "0 0 12px" }}>{error}</p>}
           <button onClick={generate} style={{
-            width: "100%", padding: "14px", borderRadius: 12, border: "1px solid #C9A24B",
-            background: "linear-gradient(180deg, #d8b25e, #b8923f)", color: "#1a1408",
+            width: "100%", padding: "14px", borderRadius: 14, border: "1px solid #7B86D5",
+            background: "linear-gradient(135deg, #8E97DE, #7B86D5 55%, #6470C4)", boxShadow: "0 8px 24px rgba(123,134,213,0.38), inset 0 1px 0 rgba(255,255,255,0.28)", color: "#FFFFFF",
             fontSize: 16, fontWeight: 500, letterSpacing: "0.06em", cursor: "pointer", fontFamily: "inherit",
           }}>
             Calcular carta
@@ -1910,9 +2085,9 @@ export default function CartaNatalApp() {
             {/* Resumen */}
             <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", marginBottom: 18 }}>
               {[["Sol", sunF], ["Ascendente", ascF], ["Luna", fmtPos(chartData.planets[1].lon)]].map(([t, f]) => (
-                <div key={t} style={{ background: "#1a1733", border: "1px solid #2e2952", borderRadius: 12, padding: "8px 16px", textAlign: "center" }}>
-                  <div style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "#8B7FB8" }}>{t}</div>
-                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, color: "#F5EFE2" }}>
+                <div key={t} style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border: "1px solid rgba(123,134,213,0.16)", borderRadius: 14, padding: "8px 16px", textAlign: "center" }}>
+                  <div style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6E7BA8" }}>{t}</div>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, color: "#142D4D" }}>
                     <span style={{ color: ELEMENT_COLOR[f.signIdx] }}>{f.glyph}</span> {f.sign} {f.text}
                   </div>
                 </div>
@@ -1931,28 +2106,28 @@ export default function CartaNatalApp() {
             <LuaAgent key={String(interpreterKey) + "-lua-" + chartData.JD + "-" + form.name} chart={chartData} name={form.name} isPremium={isPremium} onUpgrade={() => setShowPlans(true)} />
 
             {/* Posiciones */}
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, fontWeight: 600, color: "#F5EFE2", margin: "0 0 10px" }}>Posiciones</h2>
-            <div style={{ background: "#1a1733", border: "1px solid #2e2952", borderRadius: 14, overflow: "hidden", marginBottom: 26 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, fontWeight: 600, color: "#142D4D", margin: "0 0 10px" }}>Posiciones</h2>
+            <div style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border: "1px solid rgba(123,134,213,0.16)", borderRadius: 18, overflow: "hidden", marginBottom: 26 }}>
               {chartData.planets.map((p, i) => {
                 const f = fmtPos(p.lon);
                 return (
                   <div key={p.name} style={{
                     display: "flex", alignItems: "center", padding: "10px 16px",
-                    borderTop: i ? "1px solid #262148" : "none", fontSize: 15,
+                    borderTop: i ? "1px solid rgba(123,134,213,0.12)" : "none", fontSize: 15,
                   }}>
-                    <span style={{ width: 30, fontSize: 19, color: "#C9A24B" }}>{PLANET_GLYPHS[p.name]}</span>
+                    <span style={{ width: 30, fontSize: 19, color: "#7B86D5" }}>{PLANET_GLYPHS[p.name]}</span>
                     <span style={{ width: 96 }}>{p.name}</span>
                     <span style={{ color: ELEMENT_COLOR[f.signIdx], width: 26, fontSize: 17 }}>{f.glyph}</span>
                     <span style={{ flex: 1 }}>{f.text} {f.sign}{p.retro ? " ℞" : ""}</span>
-                    <span style={{ color: "#8B7FB8", fontSize: 13 }}>Casa {houseOf(p.lon, chartData.cusps)}</span>
+                    <span style={{ color: "#6E7BA8", fontSize: 13 }}>Casa {houseOf(p.lon, chartData.cusps)}</span>
                   </div>
                 );
               })}
               {[["Ascendente", chartData.asc], ["Medio Cielo", chartData.mc]].map(([n, l]) => {
                 const f = fmtPos(l);
                 return (
-                  <div key={n} style={{ display: "flex", alignItems: "center", padding: "10px 16px", borderTop: "1px solid #262148", fontSize: 15, color: "#cfc6e8" }}>
-                    <span style={{ width: 30, color: "#C9A24B", fontWeight: 600, fontSize: 13 }}>{n === "Ascendente" ? "AC" : "MC"}</span>
+                  <div key={n} style={{ display: "flex", alignItems: "center", padding: "10px 16px", borderTop: "1px solid rgba(123,134,213,0.12)", fontSize: 15, color: "#25468D" }}>
+                    <span style={{ width: 30, color: "#7B86D5", fontWeight: 600, fontSize: 13 }}>{n === "Ascendente" ? "AC" : "MC"}</span>
                     <span style={{ width: 96 }}>{n}</span>
                     <span style={{ color: ELEMENT_COLOR[f.signIdx], width: 26, fontSize: 17 }}>{f.glyph}</span>
                     <span style={{ flex: 1 }}>{f.text} {f.sign}</span>
@@ -1962,21 +2137,21 @@ export default function CartaNatalApp() {
             </div>
 
             {/* Aspectos */}
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, fontWeight: 600, color: "#F5EFE2", margin: "0 0 10px" }}>Aspectos</h2>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, fontWeight: 600, color: "#142D4D", margin: "0 0 10px" }}>Aspectos</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 8, marginBottom: 26 }}>
               {chartData.aspects.sort((a, b) => a.orb - b.orb).map((as, i) => {
-                const col = as.type.kind === "hard" ? "#d98080" : as.type.kind === "soft" ? "#7fa8d9" : "#c9bfa0";
+                const col = as.type.kind === "hard" ? "#C0566B" : as.type.kind === "soft" ? "#7B86D5" : "#C9A2D5";
                 return (
-                  <div key={i} style={{ background: "#1a1733", border: "1px solid #2e2952", borderRadius: 10, padding: "8px 12px", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                  <div key={i} style={{ background: "rgba(255,255,255,0.72)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", boxShadow: "0 8px 32px rgba(37,70,141,0.08)", border: "1px solid rgba(123,134,213,0.16)", borderRadius: 12, padding: "8px 12px", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ color: col, fontSize: 17, width: 20 }}>{as.type.glyph}</span>
                     <span style={{ flex: 1 }}>{chartData.planets[as.a].name} – {chartData.planets[as.b].name}</span>
-                    <span style={{ color: "#8B7FB8", fontSize: 12 }}>{as.type.name} {as.orb.toFixed(1)}°</span>
+                    <span style={{ color: "#6E7BA8", fontSize: 12 }}>{as.type.name} {as.orb.toFixed(1)}°</span>
                   </div>
                 );
               })}
             </div>
 
-            <p style={{ textAlign: "center", color: "#6f659b", fontSize: 12, fontStyle: "italic" }}>
+            <p style={{ textAlign: "center", color: "#8A94BC", fontSize: 12, fontStyle: "italic" }}>
               Casas Placidus · Zodiaco tropical · Precisión aproximada ±1 minuto de arco
             </p>
           </>
