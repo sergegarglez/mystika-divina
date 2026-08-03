@@ -1331,47 +1331,58 @@ async function startStripeCheckout(email) {
   if (error) throw new Error(error.message);
 }
 
-// Secure password hashing with PBKDF2-SHA256 via Web Crypto API
-async function hashPwd(password, saltHex) {
-  const enc = new TextEncoder();
-  const salt = saltHex
-    ? Uint8Array.from(saltHex.match(/.{2}/g).map(h => parseInt(h, 16)))
-    : crypto.getRandomValues(new Uint8Array(16));
-  const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", hash: "SHA-256", salt, iterations: 100000 }, key, 256
-  );
-  const hashHex = Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2,"0")).join("");
-  const saltHexOut = Array.from(salt).map(b => b.toString(16).padStart(2,"0")).join("");
-  return saltHex ? hashHex : saltHexOut + ":" + hashHex; // format: salt:hash
-}
-async function verifyPwd(password, stored) {
-  const [saltHex, hashHex] = stored.split(":");
-  if (!saltHex || !hashHex) return false; // legacy hash — force re-register
-  const computed = await hashPwd(password, saltHex);
-  return computed === hashHex;
+// ── Cliente de autenticación en la nube (Vercel KV vía /api) ──────────────────
+// El token de sesión se guarda en localStorage; el perfil y el premium viven en el servidor.
+const TOKEN_KEY = "md_token";
+const getToken = () => { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } };
+const setToken = (t) => { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch {} };
+
+async function apiPost(path, body) {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body || {}),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Error de servidor");
+  return data;
 }
 
-// ── Storage helpers (localStorage for production) ────────────────────────────
-const sg = async (k) => { try { return localStorage.getItem(k); } catch { return null; } };
-const ss = async (k, v) => { try { localStorage.setItem(k, String(v)); } catch {} };
-const sd = async (k) => { try { localStorage.removeItem(k); } catch {} };
-
-async function dbGetUser(u) {
-  const r = await sg(`u:${u.toLowerCase()}`);
-  if (!r) return null;
+// Registro → devuelve { token, user }
+async function apiRegister(username, email, password) {
+  const data = await apiPost("/api/register", { username, email, password });
+  setToken(data.token);
+  return data.user;
+}
+// Login → devuelve { token, user }
+async function apiLogin(username, password) {
+  const data = await apiPost("/api/login", { username, password });
+  setToken(data.token);
+  return data.user;
+}
+// Restaurar sesión al abrir la app → valida token y trae premium fresco
+async function apiSession() {
+  const token = getToken();
+  if (!token) return null;
   try {
-    const parsed = JSON.parse(r);
-    // Schema validation — reject malformed objects
-    if (typeof parsed.username !== "string" || typeof parsed.passwordHash !== "string") return null;
-    return parsed;
-  } catch { return null; }
+    const data = await apiPost("/api/session", { token });
+    return data.user;
+  } catch { setToken(null); return null; }
 }
-async function dbSaveUser(u) { await ss(`u:${u.username.toLowerCase()}`, JSON.stringify(u)); }
-async function dbGetSession() { const u = await sg("sess"); return u ? dbGetUser(u) : null; }
-async function dbSetSession(u) { u ? await ss("sess", u) : await sd("sess"); }
-async function dbGetQCount(u) { const v = await sg(`q:${u}`); return parseInt(v) || 0; }
-async function dbSetQCount(u, n) { await ss(`q:${u}`, n); }
+function apiLogout() { setToken(null); }
+
+// Estado premium fresco por email (para el polling tras el pago)
+async function apiCheckPremium(email) {
+  try {
+    const res = await fetch(`/api/check-premium?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    return !!data.isPremium;
+  } catch { return false; }
+}
+
+// Contador de preguntas gratis: por-usuario en localStorage (no sensible)
+async function dbGetQCount(u) { try { return parseInt(localStorage.getItem(`q:${u}`)) || 0; } catch { return 0; } }
+async function dbSetQCount(u, n) { try { localStorage.setItem(`q:${u}`, n); } catch {} }
 
 // ── AuthModal ────────────────────────────────────────────────────────────────
 function AuthModal({ onLogin, onClose }) {
@@ -1388,32 +1399,16 @@ function AuthModal({ onLogin, onClose }) {
 
   const doLogin = async () => {
     if (!username || !password) { setErr("Completa todos los campos."); return; }
-    // Brute-force protection: 5 attempts → 5 min lockout (client-side)
-    const attKey = `_attempts:${username.toLowerCase()}`;
-    const attData = JSON.parse(localStorage.getItem(attKey) || "{}");
-    const now = Date.now();
-    if (attData.lockUntil && now < attData.lockUntil) {
-      const mins = Math.ceil((attData.lockUntil - now) / 60000);
-      setErr(`Demasiados intentos. Espera ${mins} minuto${mins > 1 ? "s" : ""}.`);
-      return;
-    }
     setLoading(true); setErr("");
-    const u = await dbGetUser(username);
-    const valid = await verifyPwd(password, u?.passwordHash || ""); 
-    if (!u || !valid) {
-      // Increment failed attempts
-      const attempts = (attData.count || 0) + 1;
-      const lockUntil = attempts >= 5 ? now + 5 * 60 * 1000 : undefined;
-      localStorage.setItem(attKey, JSON.stringify({ count: attempts, lockUntil }));
-      setErr(attempts >= 5 ? "Cuenta bloqueada 5 minutos por seguridad." : `Credenciales incorrectas (${attempts}/5).`);
-      setLoading(false); return;
+    try {
+      const user = await apiLogin(username, password);
+      const qc = await dbGetQCount(user.username.toLowerCase());
+      onLogin({ ...user, questionsUsed: qc });
+    } catch (e) {
+      setErr(e.message || "No se pudo iniciar sesión.");
+    } finally {
+      setLoading(false);
     }
-    // Successful login — clear attempts
-    localStorage.removeItem(attKey);
-    await dbSetSession(u.username);
-    const qc = await dbGetQCount(u.username);
-    onLogin({ ...u, questionsUsed: qc });
-    setLoading(false);
   };
 
   const doRegister = async () => {
@@ -1423,14 +1418,14 @@ function AuthModal({ onLogin, onClose }) {
     if (!/(?=.*[A-Z])(?=.*[0-9])/.test(password)) { setErr("La contraseña debe incluir al menos una mayúscula y un número."); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr("Introduce un email válido."); return; }
     setLoading(true); setErr("");
-    const exists = await dbGetUser(username);
-    if (exists) { setErr("Ese nombre de usuario ya está en uso."); setLoading(false); return; }
-    const passwordHash = await hashPwd(password);
-    const u = { username, email, passwordHash, isPremium: false, createdAt: Date.now() };
-    await dbSaveUser(u);
-    await dbSetSession(u.username);
-    onLogin({ ...u, questionsUsed: 0 });
-    setLoading(false);
+    try {
+      const user = await apiRegister(username, email, password);
+      onLogin({ ...user, questionsUsed: 0 });
+    } catch (e) {
+      setErr(e.message || "No se pudo crear la cuenta.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -1486,57 +1481,36 @@ function PlansModal({ user, onClose, onUpgrade }) {
 
   // Poll Stripe webhook result via /api/check-premium
   const pollPremium = async (email, attempts = 0) => {
-    if (attempts > 20) {
+    if (attempts > 30) {
       setPolling(false);
-      setErr("El pago no se detectó aún. Si ya pagaste, toca 'Ya pagué' para activar manualmente.");
+      setErr("El pago aún no se confirma. Puede tardar unos minutos. Cierra y vuelve a entrar, o toca 'Ya pagué' para reintentar.");
       return;
     }
-    try {
-      const res = await fetch(`/api/check-premium?email=${encodeURIComponent(email)}`);
-      const data = await res.json();
-      if (data.isPremium) {
-        await activateLocal();
-        return;
-      }
-    } catch {}
+    const isPrem = await apiCheckPremium(email);
+    if (isPrem) { await confirmPremium(); return; }
     setTimeout(() => pollPremium(email, attempts + 1), 2000);
   };
 
-  const activateLocal = async () => {
-    try {
-      if (!user) throw new Error("Inicia sesion primero.");
-      const updated = {
-        username: user.username,
-        email: user.email || "",
-        passwordHash: user.passwordHash,
-        isPremium: true,
-        premiumSince: Date.now(),
-        createdAt: user.createdAt || Date.now(),
-      };
-      await dbSaveUser(updated);
-      setPolling(false);
-      setStep("success");
-      setTimeout(() => onUpgrade(updated), 1800);
-    } catch (e) {
-      setErr("No se pudo activar la suscripción. Inténtalo de nuevo o contacta soporte.");
-    } finally {
-      setLoading(false);
-    }
+  // El premium SOLO se concede si el servidor (webhook → KV) lo confirma
+  const confirmPremium = async () => {
+    setPolling(false);
+    setStep("success");
+    setTimeout(() => onUpgrade({ ...user, isPremium: true }), 1800);
+    setLoading(false);
   };
 
   const activatePremium = async () => {
     setLoading(true); setErr("");
-    // Try webhook verification first; fallback to manual activation
     const email = user?.email;
-    if (email) {
-      try {
-        const res = await fetch(`/api/check-premium?email=${encodeURIComponent(email)}`);
-        const data = await res.json();
-        if (data.isPremium) { await activateLocal(); return; }
-      } catch {}
-    }
-    // Webhook not confirmed yet — activate manually (user has confirmed they paid)
-    await activateLocal();
+    if (!email) { setErr("Inicia sesión primero."); setLoading(false); return; }
+    // Verificar con el servidor si el webhook ya registró el pago
+    const isPrem = await apiCheckPremium(email);
+    if (isPrem) { await confirmPremium(); return; }
+    // Aún no confirmado: seguir sondeando en vez de conceder premium a ciegas
+    setErr("Verificando tu pago con Stripe... esto puede tardar hasta un minuto.");
+    setPolling(true);
+    pollPremium(email);
+    setLoading(false);
   };
 
   // Stripe URL with prefilled email
@@ -1846,11 +1820,12 @@ export default function CartaNatalApp() {
   const [interpreterKey, setInterpreterKey] = useState(0);
 
   useEffect(() => {
-    // Clean any URL params on load (do NOT auto-activate from URL — spoofable)
+    // Limpiar params de la URL al cargar (no auto-activar desde URL — spoofeable)
     if (window.location.search) window.history.replaceState({}, "", window.location.pathname);
-    dbGetSession().then(async u => {
+    // Restaurar sesión desde la nube: valida el token y trae premium fresco
+    apiSession().then(async u => {
       if (u) {
-        const qc = await dbGetQCount(u.username);
+        const qc = await dbGetQCount(u.username.toLowerCase());
         setUser({ ...u, questionsUsed: qc });
       }
       setAuthLoading(false);
@@ -1858,7 +1833,7 @@ export default function CartaNatalApp() {
   }, []);
 
   const handleLogin = (u) => { setUser(u); setShowAuth(false); setInterpreterKey(k => k+1); };
-  const handleLogout = async () => { await dbSetSession(null); setUser(null); setInterpreterKey(k => k+1); };
+  const handleLogout = () => { apiLogout(); setUser(null); setInterpreterKey(k => k+1); };
   const handleUpgrade = (u) => { setUser({ ...u, questionsUsed: 0 }); setShowPlans(false); setInterpreterKey(k => k+1); };
   const handleQuestionUsed = async () => {
     if (!user) return;
