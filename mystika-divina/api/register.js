@@ -1,5 +1,5 @@
 // api/register.js — Crea una cuenta en Vercel KV
-import { kv } from "@vercel/kv";
+import { kv } from "./_kv.js";
 import { hashPassword, makeToken, USERNAME_RE, EMAIL_RE, validPassword, rateLimited, clientIp } from "./_auth.js";
 
 export default async function handler(req, res) {

@@ -1,5 +1,5 @@
 // api/session.js — Valida el token guardado y devuelve el perfil + estado premium fresco
-import { kv } from "@vercel/kv";
+import { kv } from "./_kv.js";
 import { verifyToken, clientIp, rateLimited } from "./_auth.js";
 
 export default async function handler(req, res) {

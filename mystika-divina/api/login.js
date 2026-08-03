@@ -1,5 +1,5 @@
 // api/login.js — Verifica credenciales contra Vercel KV
-import { kv } from "@vercel/kv";
+import { kv } from "./_kv.js";
 import { verifyPassword, makeToken, rateLimited, clientIp } from "./_auth.js";
 
 export default async function handler(req, res) {

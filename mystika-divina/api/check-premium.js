@@ -1,6 +1,6 @@
 // api/check-premium.js
 // El frontend verifica si un email tiene premium. Endurecido contra enumeración y abuso.
-import { kv } from "@vercel/kv";
+import { kv } from "./_kv.js";
 
 const rateMap = new Map();
 function rateLimited(ip) {

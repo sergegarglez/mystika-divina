@@ -1,7 +1,7 @@
 // api/stripe-webhook.js — Vercel serverless function
 // Recibe eventos de Stripe y activa/revoca premium en Vercel KV
 import Stripe from "stripe";
-import { kv } from "@vercel/kv";
+import { kv } from "./_kv.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const config = { api: { bodyParser: false } };
