@@ -1371,6 +1371,14 @@ async function apiSession() {
 }
 function apiLogout() { setToken(null); }
 
+// Abre el Customer Portal de Stripe (gestionar/cancelar suscripción)
+async function apiOpenPortal() {
+  const token = getToken();
+  if (!token) throw new Error("Inicia sesión primero.");
+  const data = await apiPost("/api/portal", { token });
+  if (data.url) window.location.href = data.url; // redirige al portal seguro de Stripe
+}
+
 // Estado premium fresco por email (para el polling tras el pago)
 async function apiCheckPremium(email) {
   try {
@@ -1723,7 +1731,7 @@ function PlansModal({ user, onClose, onUpgrade }) {
 // ── UserBar ──────────────────────────────────────────────────────────────────
 const LOGO_B64 = "data:image/png;base64,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";
 
-function UserBar({ user, onLogin, onLogout, onPlans }) {
+function UserBar({ user, onLogin, onLogout, onPlans, onManage }) {
   return (
     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"10px 16px",
       background:"rgba(42,1,64,0.55)", backdropFilter:"blur(26px) saturate(150%)", WebkitBackdropFilter:"blur(26px) saturate(150%)", borderBottom:"1px solid rgba(248,210,153,0.16)", position:"sticky", top:0, zIndex:100, marginBottom:0 }}>
@@ -1746,6 +1754,12 @@ function UserBar({ user, onLogin, onLogout, onPlans }) {
             <button onClick={onPlans} style={{ padding:"6px 12px", borderRadius:8, border:"1px solid #F59E51",
               background:"transparent", color:"#F59E51", fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>
               Mejorar plan
+            </button>
+          )}
+          {user.isPremium && (
+            <button onClick={onManage} style={{ padding:"6px 12px", borderRadius:8, border:"1px solid rgba(248,210,153,0.32)",
+              background:"transparent", color:"#F8D299", fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>
+              Gestionar suscripción
             </button>
           )}
           <button onClick={onLogout} style={{ padding:"6px 10px", borderRadius:8, border:"1px solid rgba(248,210,153,0.22)",
@@ -1834,6 +1848,13 @@ export default function CartaNatalApp() {
 
   const handleLogin = (u) => { setUser(u); setShowAuth(false); setInterpreterKey(k => k+1); };
   const handleLogout = () => { apiLogout(); setUser(null); setInterpreterKey(k => k+1); };
+  const handleManageSubscription = async () => {
+    try {
+      await apiOpenPortal(); // redirige al Customer Portal de Stripe
+    } catch (e) {
+      alert(e.message || "No se pudo abrir el portal de suscripción.");
+    }
+  };
   const handleUpgrade = (u) => { setUser({ ...u, questionsUsed: 0 }); setShowPlans(false); setInterpreterKey(k => k+1); };
   const handleQuestionUsed = async () => {
     if (!user) return;
@@ -1995,7 +2016,7 @@ export default function CartaNatalApp() {
       ))}
 
       {/* UserBar */}
-      <UserBar user={user} onLogin={() => setShowAuth(true)} onLogout={handleLogout} onPlans={() => setShowPlans(true)} />
+      <UserBar user={user} onLogin={() => setShowAuth(true)} onLogout={handleLogout} onPlans={() => setShowPlans(true)} onManage={handleManageSubscription} />
 
       {/* Premium activation success banner */}
       {user?.isPremium && user?.premiumSince && (Date.now() - user.premiumSince) < 30000 && (
